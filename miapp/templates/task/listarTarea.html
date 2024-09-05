@@ -1,0 +1,22 @@
+{% extends 'layout/menu.html' %}
+{% block content %}
+    
+     <H1>Listado de Cursos</H1>
+       <!--Recorre los cursos  -->
+    {% for curso in courses  %}
+        <h3>Nombre del curso: {{ curso.name }}</h3> 
+        <h4>Proyectos: </h4>
+        <!-- curso.project_set.all: junta todo el grupo de proyecto que pertenece a ese curso -->
+        {% for project in curso.project_set.all %}
+            <h5>Nombre del proyecto: {{project.name}}</h5> 
+            {% for task in project.task_set.all %}
+            <h6>Nombre de las tareas: {{task.title}} </h6>
+            {% empty %}
+                <p>Proyecto sin tarea</p>
+            {% endfor %}
+        {% empty %}
+            <p>Curso sin Proyecto</p>
+        {% endfor %}
+       
+    {% endfor %}
+{% endblock %}

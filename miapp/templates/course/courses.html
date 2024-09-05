@@ -1,0 +1,18 @@
+{% extends 'layout/menu.html' %}
+{% block content %}
+<h1>Cursos 📚</h1>
+
+
+{% for course in courses %}
+    {% if course.done == False %} 
+        <p>Curso Pendiente ❌</p> 
+    {% else %} 
+        <p>CURSO FINALIZADO ✅</p> 
+    {% endif %} 
+    <h2>Título: {{ course.name }}</h2>
+    <p>Description: {{ course.description }}</p>
+    <button>Inscribirse</button>
+    <button>Actualizar Información</button>
+    <button>Finalizar Curso</button>
+{% endfor %}
+{% endblock %}

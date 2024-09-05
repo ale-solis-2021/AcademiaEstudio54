@@ -1,0 +1,26 @@
+{% extends 'layout/menu.html' %}
+
+{% block content %}
+
+    <h1>Crear Nuevo Alumno</h1>
+
+    <p>Contexto de cursos: {{ curso }}</p>
+
+    <p>Cursos encontrados: {{ curso.count }}</p> <!-- Muestra el número de cursos -->
+        {% for course in curso %}
+            <ul>
+                <li>
+                    <h3>
+                    {{ course.id }} - {{ course.name }}
+                    </h3>
+                </li>
+            </ul>
+        {% endfor %}
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}  
+        <button>SAVE</button>
+    </form>
+
+{% endblock %}

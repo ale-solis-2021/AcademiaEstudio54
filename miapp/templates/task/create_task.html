@@ -1,0 +1,30 @@
+{% extends 'layout/menu.html' %}
+
+{% block content %}
+
+<h1> Create New Task </h1>
+
+<p>Contexto de proyectos: {{ proyectos }}</p>
+
+<p>Proyectos encontrados: {{ proyectos.count }}</p> <!-- Muestra el número de proyectos -->
+{% for project in proyectos %}
+    <ul>
+        <li>
+            <h3>
+            {{ project.id }} - {{ project.name }}
+            </h3>
+        </li>
+    </ul>
+{% endfor %}
+
+<form method="POST">
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button>
+        SAVE
+    </button>
+</form>
+
+{% endblock %}

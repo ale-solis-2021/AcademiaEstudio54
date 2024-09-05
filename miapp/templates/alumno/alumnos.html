@@ -1,0 +1,12 @@
+{% extends 'layout/menu.html' %}
+{% block content %}
+    <body>
+        <h1>{{ title }}</h1>
+        <ul>
+            {% for alumno in alumnos %}
+                <li>{{ alumno.nombres }} {{ alumno.apellido }} - {{ alumno.email }}</li>
+            {% endfor %}
+        </ul>
+    </body>
+    </html>
+{% endblock %}

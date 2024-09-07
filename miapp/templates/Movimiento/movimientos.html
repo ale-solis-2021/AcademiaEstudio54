@@ -1,0 +1,12 @@
+{% extends 'layout/menu.html' %}
+{% block content %}
+
+    <h1> Movimiento Diario </h1>
+    
+    <form method="POST" action="{% url 'crear_movimiento' %}">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}  
+    </form>
+{% endblock %}

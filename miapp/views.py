@@ -2,7 +2,7 @@
 from django.http import HttpResponse, JsonResponse
 from .models import Project, Task, Course, ClienteAlumno
 from django.shortcuts import get_object_or_404, render, redirect
-from .forms import CreateNewTask, CreateNewProject, CreateNewCourse,CreateNewAlumno
+from .forms import CreateNewTask, CreateNewProject, CreateNewCourse,CreateNewAlumno, MovimientoForm
 
 # def hello(request, usuario):
 #     print(usuario)
@@ -160,6 +160,21 @@ def create_course(request):
     else: 
         course = Course.objects.create(name=request.POST['name'], description=request.POST['description'])
         return redirect('/courses/')
+
+
+def crear_movimiento(request):
+    if request.method == 'POST':
+        form = MovimientoForm(request.POST)
+        if form.is_valid():
+            tipo_mov = form.cleaned_data['tipo_movimiento']
+            print(tipo_mov.nombre)
+            
+    else:
+        form = MovimientoForm()
+    
+    return render(request, 'movimiento/movimiento.html',{
+            'form':form
+            })       
 
 # def tasks(request):
 #     tarea=Task.objects.all()

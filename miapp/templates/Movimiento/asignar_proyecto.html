@@ -1,0 +1,18 @@
+{% extends 'layout/menu.html' %}
+{% block content %}
+   <h1>Asignar Proyecto</h1>
+   <H2>Proyecto asignado: {{ alumno.nombres }}</H2>
+   <h3>Curso: {{ alumno.curso }}</h3>
+   
+   <form method="POST">
+
+      {% csrf_token %}
+
+      {{ form.as_p }}  
+
+  
+      <button>
+          Asignar Proyecto
+      </button>
+   
+{% endblock %}

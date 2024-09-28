@@ -6,7 +6,111 @@
     <form method="POST" action="{% url 'crear_movimiento' %}">
 
         {% csrf_token %}
+        <!-- No trae lo que no hereda -->
+        {{ form.non_field_error }}  
+        
+        <!-- Seleccionar de la tabla de movimiento el tipo de movimiento -->
+        <div>
+            {{ form.tipo_movimiento.label_tag }} 
+            {{ form.tipo_movimiento }}
+        </div>
+        <div id="inscripcion-fields" style="display: none;">
+            <div>
+                <h3>Incripcion datos personales</h3>
+                {{ form.nombres.label_tag }}
+                {{ form.nombres }}
 
-        {{ form.as_p }}  
+                {{ form.apellido.label_tag }}
+                {{ form.apellido }}
+
+                {{ form.dni.label_tag }}
+                {{ form.dni }}
+            </div>
+            <div>
+                <h3>Domicilio</h3>
+                {{ form.direccion.label_tag }}
+                {{ form.direccion }}
+
+                {{ form.localidad.label_tag }}
+                {{ form.localidad }}
+
+                {{ form.telefono.label_tag }}
+                {{ form.telefono }}
+            </div>
+            <div>
+                <h3> Contacto </h3>
+                {{ form.email.label_tag }}
+                {{ form.email }}
+
+                {{ form.profesion.label_tag }}
+                {{ form.profesion }}
+            </div>
+            <div>
+                <h3>Curso </h3>
+                {{ form.curso.label_tag }}
+                {{ form.curso }}
+            </div>
+        </div> 
+        <div id="error-message" style="display: none; color: red;">
+            Movimiento no autorizado. 
+        </div>
+        <h3>Click Boton Guardad Datos</h3>
+        <button>Guardar datos</button>
+        
     </form>
+    <!-- Funciòn para manejar los tipos de movimientos -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tipoMovimiento = document.querySelector('select[name="tipo_movimiento"]');
+            const inscripcionFields = document.getElementById('inscripcion-fields');
+            const errorMessage = document.getElementById('error-message');
+            let alumnoId = "";
+            
+            // Función para manejar el cambio en el tipo de movimiento
+            const manejarCambioMovimiento = function() {
+                const selectedText = tipoMovimiento.options[tipoMovimiento.selectedIndex].text;
+                console.log("Opción seleccionada:", selectedText);  // Muestra la opción seleccionada
+                if (selectedText === 'INSCRIPCION') {
+                    inscripcionFields.style.display = 'block';
+                    errorMessage.style.display = 'none';  // Ocultamos el mensaje de error
+                } else if (selectedText === 'ASIGNACION DE PROYECTOS') {
+                    console.log('Iniciando asignación de proyecto');
+                    console.log('Esperando Código alumno');
+                    alumnoId = prompt("Ingrese el ID del alumno");
+                    if (alumnoId) {
+                        console.log(alumnoId);
+                        window.location.href = `/movimiento/asignar_proyecto/${alumnoId}`;
+                    } else {
+                        console.log("Alumno No existe");
+                    }
+                    
+                    inscripcionFields.style.display = 'none';
+                    errorMessage.style.display = 'none';  // Ocultamos el mensaje de error si es "Asignación de proyecto"
+                } else if (selectedText === 'ASIGNACION DE TAREAS') {
+                    console.log('Iniciando asignación de tareas');
+                    alumnoId = prompt("Ingrese el ID del alumno");
+                    if (alumnoId) {
+                        console.log(alumnoId);
+                        window.location.href = `/movimiento/asignar_tarea/${alumnoId}`;
+                    }
+                } else {
+                    inscripcionFields.style.display = 'none';
+                    errorMessage.style.display = 'block'; // Mostramos el mensaje de error
+                    errorMessage.textContent = `Movimiento no autorizado: ${selectedText}`;
+                }
+            };
+    
+            // Verificar el valor inicial, pero no mostrar mensaje de error en la primera carga
+            if (tipoMovimiento.selectedIndex === 0) {  // Suponiendo que no hay nada seleccionado aún
+                inscripcionFields.style.display = 'none';
+                errorMessage.style.display = 'none';  // No mostrar el error al cargar
+            }
+    
+            // Añadir un evento para manejar el cambio en el tipo de movimiento
+            tipoMovimiento.addEventListener('change', manejarCambioMovimiento);
+        });
+    </script>
+    
+        
+    
 {% endblock %}

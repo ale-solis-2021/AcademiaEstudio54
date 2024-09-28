@@ -1,0 +1,23 @@
+{% extends 'layout/menu.html' %}
+
+{% block content %}
+<h2>Confirmar eliminaciòn movimiento</h2>
+<h3>Detalle de Movimiento</h3>
+<li>Movimiento ID Temporal: {{ movimiento.id }} </li>
+<li>Nombre Alumno: {{ movimiento.alumno_nombre }}</li>
+<li>Tipo de Movimiento: {{ movimiento.tipo_movimiento }}</li>
+<li>Curso: {{ movimiento.curso_id }}</li>
+<li>Nombre del curso: {{ movimiento.curso_name }}</li>
+<li>Proyecto: {{ movimiento.proyecto_id }}</li>
+<li>Nombre del proyecto: {{ movimiento.proyecto_name }}</li>
+<li>Fecha: {{ movimiento.fecha }}</li>
+
+<p></p>
+<h5>¿Estàs seguro de eliminar el movimiento?</h5>
+<p></p>
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">Eliminar Mov</button>
+    <a href="{% url 'dashboard' %}">Cancelar</a>
+</form> 
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'layout/menu.html' %}
+{% block content %}
+    
+    {% if id_alumnos %}
+        <h1>No existe lo que estas buscando</h1>
+        <h2>{{  id_alumnos }}: Este ID no existe</h2>
+    {% else %}
+         <h1>Pàgina No encontrada</h1>
+    
+    {% endif %}
+
+    <a href="{% url 'index' %}">Volver al inicio</a>
+
+{% endblock %}

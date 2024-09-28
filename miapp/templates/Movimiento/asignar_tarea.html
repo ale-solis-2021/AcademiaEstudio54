@@ -1,0 +1,13 @@
+<!-- asignar_tarea.html -->
+{% extends 'layout/menu.html' %}
+{% block content %}
+   <h1>Asignar Tarea</h1>
+   <h2>Alumno: {{ alumno.nombres }}</h2>
+   <h3>Curso: {{ alumno.curso }}</h3>
+   
+   <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button>Asignar Tarea</button>
+   </form>
+{% endblock %}

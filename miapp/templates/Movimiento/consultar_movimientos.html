@@ -1,0 +1,36 @@
+{% extends 'layout/menu.html' %}
+{% block content %}
+    <h2>Lista de Movimiento</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Id alumno</th>
+                <th>Nombre Alumno</th>
+                <th>Tipo de Movimiento</th>
+                <th>Id del curso</th>
+                <th>Nombre del curso</th>
+                <th>Id del proyecto</th>
+                <th>Nombre del proyecto</th>
+            </tr>
+        </thead>
+  
+    <tbody>
+        {% for movimiento in movimientos %}
+        <tr>
+            <td>{{ movimiento.alumno.id }}</td>
+            <td>{{ movimiento.alumno.nombres }} {{ movimiento.apellido }}</td>
+            <td>{{ movimiento.tipo_movimiento.nombre }}</td>
+
+            <td>{{ movimiento.curso.id }}</td>
+            <td>{{ movimiento.curso.name }}</td>
+
+            <td>{{ movimiento.proyecto.id }}</td>
+            <td>{{ movimiento.proyecto.name }}</td>
+
+        </tr>
+        {% endfor %}
+
+    </tbody>
+    </table>
+   
+{% endblock %}

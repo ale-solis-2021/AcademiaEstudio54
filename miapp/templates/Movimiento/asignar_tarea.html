@@ -3,7 +3,8 @@
 {% block content %}
    <h1>Asignar Tarea</h1>
    <h2>Alumno: {{ alumno.nombres }}</h2>
-   <h3>Curso: {{ alumno.curso }}</h3>
+   <h3>Curso: {{ curso.name }}</h3>
+   <h4>Proyecto: {{ proyecto.name }}</h4>
    
    <form method="POST">
       {% csrf_token %}

@@ -80,7 +80,7 @@ def alumnos(request):
 def create_alumno(request):
     c_cursos = Course.objects.all()
     print(c_cursos)
-
+ 
     if request.method == 'POST':
         form = CreateNewAlumno(request.POST)
         if form.is_valid():
@@ -92,6 +92,16 @@ def create_alumno(request):
             alumno = form.save(commit=False)
             alumno.curso_id = curso_id
             alumno.save()
+        #alta/ingreso alumno
+            
+            tipo_movimiento = TipoMovimiento.objects.get(nombre="INSCRIPCION")
+            print(vars(tipo_movimiento))
+            Movimiento.objects.create(
+                alumno_id = alumno.id,
+                curso_id = curso.id,
+                tipo_movimiento_id = tipo_movimiento.id, 
+                fecha_movimiento = timezone.now(),    
+            )
 
             return redirect('/alumnos/')
     else:
@@ -165,42 +175,35 @@ def create_course(request):
 
 
 def crear_movimiento(request):
+    # obtener los datos del alumno  
+    alumnos = ClienteAlumno.objects.all()
+    alumno_seleccionado = None
+    proyectos_asignados = []
+    tareas_asignadas = []
+
     if request.method == 'POST':
-        form = MovimientoForm(request.POST)
-        if form.is_valid():
-            tipo_mov = form.cleaned_data['tipo_movimiento']
-            print(tipo_mov.nombre)
-            if tipo_mov.nombre != "INSCRIPCION":
-                messages.error(request, 'Movimiento No Autorizado')
-                return redirect('crear_movimiento')
-            
-            alumno = ClienteAlumno.objects.create(
-                nombres = form.cleaned_data['nombres'],
-                apellido=form.cleaned_data['apellido'],
-                dni=form.cleaned_data['dni'],
-                direccion=form.cleaned_data['direccion'],
-                localidad=form.cleaned_data['localidad'],
-                telefono=form.cleaned_data['telefono'],
-                email=form.cleaned_data['email'],
-                profesion=form.cleaned_data['profesion'],
-                curso=form.cleaned_data['curso'],
-                estudiante=True
-                
-                
-                
-            )
-            movimiento = form.save(commit=False) 
-            movimiento.alumno = alumno
-            movimiento.save()
-            return redirect('/alumnos/')
-          
-            
-    else:
-        form = MovimientoForm()
+        alumno_id = request.POST.get('alumno')
+        if alumno_id:
+            alumno_seleccionado = get_object_or_404(ClienteAlumno, id=alumno_id)
+            print(vars(alumno_seleccionado))
+            proyectos_asignados = Project.objects.filter(curso=alumno_seleccionado.curso)
+            tareas_asignadas = Task.objects.filter(project__curso=alumno_seleccionado.curso)
+        else:
+            return redirect('inscribir_alumno')
+
+    return render(request, 'movimiento/movimientos.html', {
+        'alumnos': alumnos,
+        'alumno_seleccionado': alumno_seleccionado,
+        'proyectos_asignados': proyectos_asignados,  
+        'tareas_asignadas': tareas_asignadas,  
+    })
+ 
     
-    return render(request, 'movimiento/movimientos.html',{
-            'form':form
-            })       
+
+def inscribir_alumno(request):
+    return redirect('crear_movimiento')
+    
+       
  
  
 def asignar_proyecto(request, id_alumnos):
@@ -244,10 +247,10 @@ def asignar_proyecto(request, id_alumnos):
 
 
 
-def asignar_tarea(request, id_alumnos):
+def asignar_tarea(request, id_alumnos, proyecto_name):
     alumno = ClienteAlumno.objects.get(id=id_alumnos)
     tipo_movimiento = TipoMovimiento.objects.get(nombre='ASIGNACION DE TAREAS')
-    
+    proyecto = get_object_or_404(Project, name=proyecto_name)
     if request.method == 'POST':
         form = AsignacionTareaForm(request.POST)
         if form.is_valid():
@@ -342,7 +345,7 @@ def confirmar_eliminar_movimiento(request, alumno_id):
             curso_id = movimientoT.curso_id, 
             proyecto_id = movimientoT.proyecto_id,
             tipo_movimiento = movimientoT.tipo_movimiento_id,
-            fecha = movimientoT.fecha
+            fecha_movimiento = movimientoT.fecha
         )
         print('Encontrè el movimiento', movimientos)
     except Movimiento.DoesNotExist:
@@ -351,8 +354,14 @@ def confirmar_eliminar_movimiento(request, alumno_id):
     
     if request.method == 'POST':
         print('acà elimino los datos de la tabla temporal')   
-        # MovimientoTemporal.delete()
-        print("tengo que buscar los movimiento en la tabla original")
+        movimientoT.delete()
+        print('movimiento tabla temporal eliminado')
+        if movimientos.exists():
+            for movi in movimientos:
+                movi.delete()
+            print('Los movimientos se eliminaron correctamente')
+        else:        
+            print("No encontrrè movimiento para eliminar")
         
         return redirect('dashboard')
     

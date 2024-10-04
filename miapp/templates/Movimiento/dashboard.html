@@ -15,7 +15,7 @@
         {% endfor %}
     </select>
     <button type="submit">Filtrar</button>
-</form>
+</form> 
 
 <!-- Tabla de movimientos -->
 <table border="1">
@@ -28,10 +28,10 @@
             <th>Nombre del Curso</th>
             <th>ID del Proyecto</th>
             <th>Nombre del Proyecto</th>
+            <th>Tareas Asignadas</th> <!-- Nueva columna para mostrar las tareas -->
             <th>Fecha</th>
-            <th>IdMovT</th>
+            <th>ID Movimiento</th>
             <th>Acciones</th>
-            
         </tr>
     </thead>
     <tbody>
@@ -44,28 +44,37 @@
             <td>{{ movimiento.curso_name }}</td>
             <td>{{ movimiento.proyecto_id }}</td>
             <td>{{ movimiento.proyecto_name }}</td>
+            <td>
+                <!-- Verificar si tiene tareas asignadas al proyecto -->
+                {% if movimiento.proyecto_id %}
+                    {% for tarea in movimiento.tareas %}
+                    <ul>
+                        <li>{{ tarea.title }} ({{ tarea.done|yesno:"Completada,No completada" }})</li>
+                    </ul>
+                    {% empty %}
+                    <span>No tiene tareas asignadas.</span>
+                    {% endfor %}
+                {% else %}
+                <span>No tiene proyecto asignado.</span>
+                {% endif %}
+            </td>
             <td>{{ movimiento.fecha }}</td>
-            <td>{{ movimiento.id }}</td>
             <td>
                 <!-- Botón para agregar tarea si hay proyecto asociado -->
                 {% if movimiento.proyecto_id %}
                 <a href="{% url 'agregar_tarea' movimiento.alumno_id movimiento.curso_id movimiento.proyecto_id %}">Agregar Tarea</a>
+                {% else %}
+                <a href="{% url 'asignar_proyecto' movimiento.alumno_id %}">Asignar Proyecto</a>
                 {% endif %}
 
-                {% if movimiento.alumno_nombre %}
+                <!-- Acción para eliminar el movimiento -->
                 <form action="{% url 'confirmar_eliminar_movimiento' movimiento.id %}" method="GET">
                     {% csrf_token %}
                     <button>Eliminar Mov</button>
                 </form> 
-                {% else %}
-                <span> Eliminar </span>
-                {% endif %}
-
-                {% if movimiento.alumno_nombre %}
-                <a href="{% url 'confirmar_eliminar_movimiento' movimiento.alumno_id %}">Ver actividad</a>
-                {% else %}
-                <span> Actividad </span>
-                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'ver_actividad' movimiento.alumno_id %}" class="btn btn-info">Ver Actividad</a>
             </td>
         </tr>
         {% endfor %}

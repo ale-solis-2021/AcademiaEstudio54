@@ -17,6 +17,7 @@ urlpatterns = [
     path('movimiento/dashboard/', views.dashboard, name='dashboard'),
     path('movimiento/confirmar_eliminar_movimiento/<int:alumno_id>/', views.confirmar_eliminar_movimiento, name='confirmar_eliminar_movimiento'),
     path('movimiento/agregar_tarea/<int:alumno_id>/<int:curso_id>/<int:proyecto_id>', views.agregar_tarea, name='agregar_tarea'),
+    path('movimiento/ver_actividad/<int:alumno_id>/', views.ver_actividad, name='ver_actividad'),
     path('movimiento/asignar_proyecto/<int:id_alumnos>', views.asignar_proyecto, name='asignar_proyecto'),
     path('movimiento/asignar_tarea/<int:id_alumnos>', views.asignar_tarea, name='asignar_tarea'),
     path('about/', views.about),

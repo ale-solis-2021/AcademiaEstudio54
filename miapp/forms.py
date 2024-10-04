@@ -10,7 +10,7 @@ class CreateNewTask(forms.ModelForm):
         model = Task
         fields = ['title', 'description', 'project']
 
-class CreateNewProject(forms.ModelForm):
+class CreateNewProject(forms.ModelForm): 
     # name = forms.CharField(label='Nombre del Proyecto: ', max_length=100)    
     # curso_id =forms.IntegerField(required=True, label="ID del curso")
     curso = forms.ModelChoiceField(queryset=Course.objects.all(), label="Curso Asociado")

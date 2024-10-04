@@ -1,34 +1,66 @@
 {% extends 'layout/menu.html' %}
+
 {% block content %}
-   <h1>Crear Movimiento Diario</h1>
-   <h2>Seleccionar Alumno: </h2>   
-    
-   <form method="POST">
-       {% csrf_token %}
-       {{ form.non_field_errors }}
-       
-       <div>
-           <label for="alumno">Seleccionar Alumno:</label>
-           <select name="alumno" id="alumno">
-               <option value="">-- Seleccione un Alumno --</option>
-               {{ alumnos }}
-               {% for alumno in alumnos %}
-                   <option value="{{ alumno.id }}">
-                       {{ alumno.nombres }} {{ alumno.apellido }} - Curso: {{ alumno.curso.name|default:"Sin curso" }}
-                   </option>
-               {% endfor %}  
-               {{ alumno_seleccionado.nombres }} {{ alumno_seleccionado.apellido }}
-           </select> 
-       </div> 
-       <button>Seleccionar</button> 
-   </form>
-   {{ alumno_seleccionado }}
-   {% if alumno_seleccionado %}
-       {% for proyecto in proyectos_asignados %}
-           <p>Proyecto: {{ proyecto.name }}</p>
-           {% for tarea in tareas_asignadas %}
-               <p>Tarea: {{ tarea.title }}</p>
-           {% endfor %}
-       {% endfor %}
-   {% endif %}
+<h1>Crear Movimiento Diario</h1>
+<h2>Seleccionar Alumno: </h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div>
+        <label for="alumno">Seleccionar Alumno:</label>
+        <select name="alumno" id="alumno">
+            <option value="">-- Seleccione un Alumno --</option>
+            {% for alumno in alumnos %}
+            <option value="{{ alumno.id }}">
+                {{ alumno.nombres }} {{ alumno.apellido }} - Curso: {{ alumno.curso.name|default:"Sin curso" }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit">Seleccionar</button>
+</form>
+
+{% if alumno_seleccionado %}
+<h2>Detalles del Alumno Seleccionado</h2>
+<p><strong>Nombre:</strong> {{ alumno_seleccionado.nombres }} {{ alumno_seleccionado.apellido }}</p>
+<p><strong>Curso:</strong> {{ alumno_seleccionado.curso.name|default:"Sin curso" }}</p>
+
+{% if proyectos_asignados %}
+<p>Proyectos Asignados:</p>
+<ul>
+    {% for movimiento in proyectos_asignados %}
+    <li>{{ movimiento.proyecto.name }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No tiene proyectos asignados.</p>
+{% endif %}
+
+{% if tareas_asignadas %}
+<p>Tareas Asignadas:</p>
+<ul>
+    {% for tarea in tareas_asignadas %}
+    <li>{{ tarea.title }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No tiene tareas asignadas.</p>
+{% endif %}
+
+<h3>Seleccionar Tipo de Movimiento</h3>
+<form method="POST" action="{% url 'asignar_proyecto' alumno_seleccionado.id %}">
+    {% csrf_token %}
+    <div>
+        <label for="tipo_movimiento">Tipo de Movimiento:</label>
+        <select name="tipo_movimiento" id="tipo_movimiento" required>
+            <option value="">-- Seleccione un Movimiento --</option>
+            <option value="asignar_proyecto">Asignar Proyecto</option>
+            <option value="asignar_tarea">Asignar Tarea</option>
+        </select>
+    </div>
+    <button type="submit">Continuar</button>
+</form>
+{% endif %}
 {% endblock %}

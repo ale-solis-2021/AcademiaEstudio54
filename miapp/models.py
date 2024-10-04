@@ -217,6 +217,7 @@ class MovimientoTemporal(models.Model):
     curso_name = models.CharField(max_length=100, null=True, blank=True)
     proyecto = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True)
     proyecto_name = models.CharField(max_length=100, null=True, blank=True)
+    tareas_asignadas = models.TextField(null=True, blank=True)  # Campo para almacenar tareas asignadas
     fecha = models.DateTimeField()
 
     def __str__(self):

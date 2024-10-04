@@ -174,29 +174,29 @@ def create_course(request):
         return redirect('/courses/')
 
 
-def crear_movimiento(request):
-    # obtener los datos del alumno  
-    alumnos = ClienteAlumno.objects.all()
-    alumno_seleccionado = None
-    proyectos_asignados = []
-    tareas_asignadas = []
+# def crear_movimiento(request):
+#     # obtener los datos del alumno  
+#     alumnos = ClienteAlumno.objects.all()
+#     alumno_seleccionado = None
+#     proyectos_asignados = []
+#     tareas_asignadas = [] 
 
-    if request.method == 'POST':
-        alumno_id = request.POST.get('alumno')
-        if alumno_id:
-            alumno_seleccionado = get_object_or_404(ClienteAlumno, id=alumno_id)
-            print(vars(alumno_seleccionado))
-            proyectos_asignados = Project.objects.filter(curso=alumno_seleccionado.curso)
-            tareas_asignadas = Task.objects.filter(project__curso=alumno_seleccionado.curso)
-        else:
-            return redirect('inscribir_alumno')
+#     if request.method == 'POST':
+#         alumno_id = request.POST.get('alumno')
+#         if alumno_id:
+#             alumno_seleccionado = get_object_or_404(ClienteAlumno, id=alumno_id)
+#             print(vars(alumno_seleccionado))
+#             proyectos_asignados = Project.objects.filter(curso=alumno_seleccionado.curso)
+#             tareas_asignadas = Task.objects.filter(project__curso=alumno_seleccionado.curso)
+#         else:
+#             return redirect('inscribir_alumno')
 
-    return render(request, 'movimiento/movimientos.html', {
-        'alumnos': alumnos,
-        'alumno_seleccionado': alumno_seleccionado,
-        'proyectos_asignados': proyectos_asignados,  
-        'tareas_asignadas': tareas_asignadas,  
-    })
+#     return render(request, 'movimiento/movimientos.html', {
+#         'alumnos': alumnos,
+#         'alumno_seleccionado': alumno_seleccionado,
+#         'proyectos_asignados': proyectos_asignados,  
+#         'tareas_asignadas': tareas_asignadas,  
+#     })
  
     
 
@@ -206,46 +206,76 @@ def inscribir_alumno(request):
        
  
  
+def crear_movimiento(request):
+    # Obtener todos los alumnos
+    alumnos = ClienteAlumno.objects.all()
+    alumno_seleccionado = None
+    proyectos_asignados = []
+    tareas_asignadas = []
+
+    if request.method == 'POST':
+        alumno_id = request.POST.get('alumno')
+
+        if alumno_id:
+            alumno_seleccionado = get_object_or_404(ClienteAlumno, id=alumno_id)
+
+            # Obtener el curso del alumno
+            curso = alumno_seleccionado.curso
+
+            # Filtrar proyectos asignados por el movimiento del alumno
+            proyectos_asignados = Movimiento.objects.filter(
+                alumno=alumno_seleccionado,
+                tipo_movimiento__nombre='ASIGNACION DE PROYECTOS'
+            ).select_related('proyecto')
+
+            # Filtrar tareas por los proyectos asignados al alumno
+            proyectos_ids = proyectos_asignados.values_list('proyecto__id', flat=True)
+            tareas_asignadas = Task.objects.filter(project__id__in=proyectos_ids)
+        else:
+            return redirect('inscribir_alumno')
+
+    return render(request, 'movimiento/movimientos.html', {
+        'alumnos': alumnos,
+        'alumno_seleccionado': alumno_seleccionado,
+        'proyectos_asignados': proyectos_asignados,
+        'tareas_asignadas': tareas_asignadas,
+    })
+
+
+
 def asignar_proyecto(request, id_alumnos):
     try:
-        alumno = ClienteAlumno.objects.get(id = id_alumnos)
-        tipo_movimiento = TipoMovimiento.objects.get(nombre = 'ASIGNACION DE PROYECTOS')
-        print(alumno)
-        curso = alumno.curso
-    except:  
-        print('El alumno no existe')
+        alumno = ClienteAlumno.objects.get(id=id_alumnos)
+        tipo_movimiento = TipoMovimiento.objects.get(nombre='ASIGNACION DE PROYECTOS')
+    except ClienteAlumno.DoesNotExist:
         return render(request, 'no_existe.html', {'id_alumnos': id_alumnos})
-    
-       
-    if request.method == 'POST':
-        form = AsignacionProyectoForm(request.POST)
-        if form.is_valid():
-            proyecto = form.cleaned_data['proyecto']
-            print("Este es proyecto:",proyecto)
-            print("Este es alumno: ",alumno)
-            print("Este es curso",alumno.curso)
-            print("id:", alumno.id, proyecto.id, curso.id, tipo_movimiento.id)
-            movimiento_nuevo = Movimiento(
-                 fecha_movimiento = timezone.now(),
-                 tipo_movimiento = tipo_movimiento, 
-                 alumno = alumno,
-                 curso = curso,
-                 proyecto = proyecto
-            )
-            movimiento_nuevo.save()
-            return redirect('/alumnos/')
-        
-    else:     
-        print('Voy a buscar los proyectos')
-        form = AsignacionProyectoForm(request.POST, alumno = alumno)
-        
-    
-    return render(request, 'movimiento/asignar_proyecto.html',{
-            'form':form,
-            'alumno':alumno
-        })
 
+    # Consultar los movimientos del alumno para obtener los cursos, proyectos y tareas
+    movimientos = Movimiento.objects.filter(alumno=alumno)
 
+    # Organizar los proyectos y tareas en función de los cursos
+    cursos_con_proyectos_y_tareas = {}
+    
+    for movimiento in movimientos:
+        curso = movimiento.curso
+        proyecto = movimiento.proyecto
+        tarea = movimiento.tarea
+
+        if curso not in cursos_con_proyectos_y_tareas:
+            cursos_con_proyectos_y_tareas[curso] = {'proyectos': {}, 'tareas': []}
+        
+        # Añadir proyectos a los cursos
+        if proyecto and proyecto not in cursos_con_proyectos_y_tareas[curso]['proyectos']:
+            cursos_con_proyectos_y_tareas[curso]['proyectos'][proyecto] = {'tareas': []}
+        
+        # Añadir tareas a los proyectos
+        if tarea and proyecto:
+            cursos_con_proyectos_y_tareas[curso]['proyectos'][proyecto]['tareas'].append(tarea)
+
+    return render(request, 'movimiento/asignar_proyecto.html', {
+        'alumno': alumno,
+        'cursos_con_proyectos_y_tareas': cursos_con_proyectos_y_tareas
+    })
 
 def asignar_tarea(request, id_alumnos, proyecto_name):
     alumno = ClienteAlumno.objects.get(id=id_alumnos)
@@ -291,20 +321,28 @@ def llenar_tabla_temporal():
     # Limpiar la tabla temporal
     MovimientoTemporal.objects.all().delete()
 
-    # Crear registros temporales
+    # Crear registros temporales obteniendo todos los movimientos
     movimientos = Movimiento.objects.select_related('alumno', 'curso', 'proyecto', 'tipo_movimiento').all()
 
     for movimiento in movimientos:
         tipo_movimiento_instance = movimiento.tipo_movimiento  # Obtener la instancia de TipoMovimiento
 
+        # Obtener las tareas relacionadas con el proyecto si el proyecto existe
+        tareas = Task.objects.filter(project_id=movimiento.proyecto.id) if movimiento.proyecto else None
+
+        # Concatenar las tareas en un string o almacenarlas en la tabla temporal de la manera que prefieras
+        tareas_asignadas = ', '.join([tarea.title for tarea in tareas]) if tareas else None
+
+        # Crear el registro en la tabla temporal
         MovimientoTemporal.objects.create(
             alumno_id=movimiento.alumno.id,
             alumno_nombre=f"{movimiento.alumno.nombres} {movimiento.alumno.apellido}",
-            tipo_movimiento=tipo_movimiento_instance,  # Asignar la instancia
+            tipo_movimiento=tipo_movimiento_instance,  # Asignar la instancia de TipoMovimiento
             curso_id=movimiento.curso.id if movimiento.curso else None,
             curso_name=movimiento.curso.name if movimiento.curso else None,
             proyecto_id=movimiento.proyecto.id if movimiento.proyecto else None,
             proyecto_name=movimiento.proyecto.name if movimiento.proyecto else None,
+            tareas_asignadas=tareas_asignadas,  # Guardar las tareas asignadas como string
             fecha=movimiento.fecha_movimiento
         )
 
@@ -370,7 +408,18 @@ def confirmar_eliminar_movimiento(request, alumno_id):
     }
     print('mostrar_formulario_con_los_registros')
     return render(request,'movimiento/confirmar_eliminar_movimiento.html', context)
-   
+
+def ver_actividad(request, alumno_id):
+    # Obtener el alumno por su ID
+    alumno = get_object_or_404(ClienteAlumno, id=alumno_id)
+    
+    # Obtener todos los movimientos relacionados al alumno
+    movimientos = Movimiento.objects.filter(alumno=alumno).order_by('fecha_movimiento')
+
+    return render(request, 'movimiento/ver_actividad.html', {
+        'alumno': alumno,
+        'movimientos': movimientos
+    })   
     
 # def tasks(request):
 #     tarea=Task.objects.all()

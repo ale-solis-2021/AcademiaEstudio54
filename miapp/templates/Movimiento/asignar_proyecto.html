@@ -1,18 +1,54 @@
 {% extends 'layout/menu.html' %}
+
 {% block content %}
-   <h1>Asignar Proyecto</h1>
-   <H2>Proyecto asignado: {{ alumno.nombres }}</H2>
-   <h3>Curso: {{ alumno.curso }}</h3>
-   
-   <form method="POST">
+<h1>Asignar Proyecto al Alumno</h1>
 
-      {% csrf_token %}
+<h2>Detalles del Alumno</h2>
+<p><strong>Nombre:</strong> {{ alumno.nombres }} {{ alumno.apellido }}</p>
 
-      {{ form.as_p }}  
+{% if cursos_con_proyectos_y_tareas %}
+    <h3>Cursos y Proyectos Asignados</h3>
+    {% for curso, data in cursos_con_proyectos_y_tareas.items %}
+        <h4>Curso: {{ curso.name }}</h4>
+        
+        {% if data.proyectos %}
+            <p><strong>Proyectos Asignados:</strong></p>
+            <ul>
+                {% for proyecto, detalles in data.proyectos.items %}
+                    <li>{{ proyecto.name }} ({{ proyecto.description }})</li>
+                    
+                    {% if detalles.tareas %}
+                        <p>Tareas asignadas al proyecto:</p>
+                        <ul>
+                            {% for tarea in detalles.tareas %}
+                                <li>{{ tarea.title }}: {{ tarea.description }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No tiene tareas asignadas para este proyecto.</p>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No tiene proyectos asignados.</p>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <p>El alumno no tiene movimientos registrados.</p>
+{% endif %}
 
-  
-      <button>
-          Asignar Proyecto
-      </button>
-   
+<!-- Formulario para asignar un nuevo proyecto -->
+<h3>Asignar un nuevo Proyecto</h3>
+<form method="POST" action="{% url 'asignar_proyecto' alumno.id %}">
+    {% csrf_token %}
+    <label for="proyecto">Seleccionar Proyecto:</label>
+    <select name="proyecto" id="proyecto">
+        <option value="">-- Seleccione un Proyecto --</option>
+        {% for proyecto in proyectos_disponibles %}
+            <option value="{{ proyecto.id }}">{{ proyecto.name }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Asignar Proyecto</button>
+</form>
+
 {% endblock %}

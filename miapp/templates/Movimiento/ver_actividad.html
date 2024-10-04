@@ -1,0 +1,55 @@
+{% extends 'layout/menu.html' %}
+
+{% block content %}
+<h2>Actividad de {{ alumno.nombres }} {{ alumno.apellido }}</h2>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Tipo de Movimiento</th>
+            <th>Curso</th>
+            <th>Proyecto</th>
+            <th>Tarea</th>
+            <th>Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for movimiento in movimientos %}
+        <tr>
+            <td>{{ movimiento.tipo_movimiento.nombre }}</td>
+            
+            <!-- Validación para el curso -->
+            <td>
+                {% if movimiento.curso %}
+                    {{ movimiento.curso.name }}
+                {% else %}
+                    Sin curso
+                {% endif %}
+            </td>
+            
+            <!-- Validación para el proyecto -->
+            <td>
+                {% if movimiento.proyecto %}
+                    {{ movimiento.proyecto.name }}
+                {% else %}
+                    Sin proyecto
+                {% endif %}
+            </td>
+            
+            <!-- Validación para la tarea -->
+            <td>
+                {% if movimiento.tarea %}
+                    {{ movimiento.tarea.title }}
+                {% else %}
+                    Sin tarea
+                {% endif %}
+            </td>
+            
+            <td>{{ movimiento.fecha_movimiento }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'dashboard' %}" class="btn btn-primary">Volver al Dashboard</a>
+{% endblock %}

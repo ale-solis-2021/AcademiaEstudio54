@@ -5,27 +5,26 @@
     <h1> Create New Project </h1>
 
     <p>Contexto de cursos: {{ curso }}</p>
-    
 
-    <p>Cursos encontrados: {{ curso.count}}</p> <!-- Muestra el número de cursos -->
-        {% for course in curso %}
-            <ul>
-                <li>
-                    <h3>
-                    {{ course.id }} - {{ course.name }}
-                    </h3>
-                </li>
-            </ul>
-        {% endfor %}
+    <p>Cursos encontrados: {{ curso.count }}</p> <!-- Muestra el número de cursos -->
+
+    <table border='1'>
+        <tr>
+            {% for course in curso %}
+                <td>
+                    <h3>Curso :{{ course.id }} - Nombre: {{ course.name }}</h3>
+                </td>
+            {% endfor %}
+        </tr>
+    </table>
 
     <form method="POST">
-
         {% csrf_token %}
+        {{ form.as_p }}
 
-        {{ form.as_p }}  
-
-    
         <button>
             SAVE
         </button>
+    </form>
+
 {% endblock %}

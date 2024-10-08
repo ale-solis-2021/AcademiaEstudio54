@@ -1,7 +1,7 @@
 {% extends 'layout/menu.html' %}
 
 {% block content %}
-<h2>Dashboard de Movimientos</h2>
+<h2>Dashboard de Movimientos Temporales</h2>
 
 <!-- Formulario para seleccionar el tipo de movimiento -->
 <form method="get" action="{% url 'dashboard' %}">
@@ -17,7 +17,7 @@
     <button type="submit">Filtrar</button>
 </form> 
 
-<!-- Tabla de movimientos -->
+<!-- Tabla de movimientos temporales -->
 <table border="1">
     <thead>
         <tr>
@@ -28,9 +28,8 @@
             <th>Nombre del Curso</th>
             <th>ID del Proyecto</th>
             <th>Nombre del Proyecto</th>
-            <th>Tareas Asignadas</th> <!-- Nueva columna para mostrar las tareas -->
+            <th>Tareas Asignadas</th>
             <th>Fecha</th>
-            <th>ID Movimiento</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -38,36 +37,32 @@
         {% for movimiento in movimientos %}
         <tr>
             <td>{{ movimiento.alumno_id }}</td>
-            <td>{{ movimiento.alumno_nombre }}</td>
-            <td>{{ movimiento.tipo_movimiento }}</td>
+            <td>{{ movimiento.alumno_nombre }}</td> <!-- Ajuste de nombre del alumno -->
+            <td>{{ movimiento.tipo_movimiento.nombre }}</td> <!-- Muestra el nombre del tipo de movimiento -->
             <td>{{ movimiento.curso_id }}</td>
             <td>{{ movimiento.curso_name }}</td>
             <td>{{ movimiento.proyecto_id }}</td>
             <td>{{ movimiento.proyecto_name }}</td>
             <td>
                 <!-- Verificar si tiene tareas asignadas al proyecto -->
-                {% if movimiento.proyecto_id %}
-                    {% for tarea in movimiento.tareas %}
+                {% if movimiento.tareas_asignadas %}
                     <ul>
-                        <li>{{ tarea.title }} ({{ tarea.done|yesno:"Completada,No completada" }})</li>
+                        <li>{{ movimiento.tareas_asignadas }}</li> <!-- Las tareas concatenadas se muestran aquí -->
                     </ul>
-                    {% empty %}
-                    <span>No tiene tareas asignadas.</span>
-                    {% endfor %}
                 {% else %}
-                <span>No tiene proyecto asignado.</span>
+                <span>No tiene tareas asignadas.</span>
                 {% endif %}
             </td>
-            <td>{{ movimiento.fecha }}</td>
+            <td>{{ movimiento.fecha }}</td> <!-- Ajustado para reflejar la fecha en el modelo temporal -->
             <td>
                 <!-- Botón para agregar tarea si hay proyecto asociado -->
                 {% if movimiento.proyecto_id %}
-                <a href="{% url 'agregar_tarea' movimiento.alumno_id movimiento.curso_id movimiento.proyecto_id %}">Agregar Tarea</a>
+                <a href="{% url 'asignar_tarea' movimiento.alumno_id movimiento.curso_id movimiento.proyecto_id %}">Agregar Tarea</a>
                 {% else %}
                 <a href="{% url 'asignar_proyecto' movimiento.alumno_id %}">Asignar Proyecto</a>
                 {% endif %}
-
-                <!-- Acción para eliminar el movimiento -->
+            </td>
+            <td>
                 <form action="{% url 'confirmar_eliminar_movimiento' movimiento.id %}" method="GET">
                     {% csrf_token %}
                     <button>Eliminar Mov</button>

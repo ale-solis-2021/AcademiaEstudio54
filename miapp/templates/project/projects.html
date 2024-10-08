@@ -1,32 +1,35 @@
 {% extends 'layout/menu.html' %}
 {% block content %}
     <h1> Proyectos de estudios </h1>
-    <h2>- {{ title }}</h2>
 
-    <h2>{{ project }}</h2>
+    {% for course in courses %}
+        <h2>Curso: {{ course.name }}</h2>
+        <p>Descripción del curso: {{ course.description }}</p>
 
-    {% for project in projects %}
-
-        <p>Nombre del proyecto: {{ project.name }}</p>
-        <p>Description del proyecto: {{ project.description }}</p>
-        <p>Id del Proyecto: {{ project.id }}</p>
-        <p>Curso : {{ project.curso.name }}</p>
-        <ul>
-
-        </ul>
-        {% for tarea in project.task_set.all %}
-            <li>
-                {{ tarea.title }}
-            </li>
-        {% endfor %}
-        <p>---------------------------------------------------------</p>
+        {% if course.project_set.all %}
+            <h3>Proyectos asignados al curso:</h3>
+            {% for project in course.project_set.all %}
+                <p><strong>Proyecto {{ forloop.counter }}:</strong></p>
+                <p>Nombre del proyecto: {{ project.name }}</p>
+                <p>Descripción del proyecto: {{ project.description }}</p>
+                <p>ID del Proyecto: {{ project.id }}</p>
+                
+                <h4>Tareas asignadas al proyecto:</h4>
+                {% if project.task_set.all %}
+                    <ul>
+                        {% for tarea in project.task_set.all %}
+                            <li>{{ tarea.title }} - {{ tarea.description }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No hay tareas asignadas a este proyecto.</p>
+                {% endif %}
+                <p>---------------------------------------------------------</p>
+            {% endfor %}
+        {% else %}
+            <p>No hay proyectos asignados a este curso.</p>
+        {% endif %}
+        <hr>
     {% endfor %}
-
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. A eum doloribus ab alias dicta
-        perferendis, ullam eligendi soluta ipsam consequatur consequuntur dolore nemo ad, culpa, 
-        tenetur hic magnam facere facilis! Velit vel neque molestiae soluta. Neque, voluptas dicta?
-        Quae rerum aliquam ea sapiente! Illum voluptas id recusandae architecto velit accusamus 
-        aliquam nulla cumque, eveniet vero hic provident et officia quibusdam, esse volupta</p>
-
 
 {% endblock %}

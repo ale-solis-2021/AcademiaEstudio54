@@ -14,23 +14,23 @@
         {% if data.proyectos %}
             <p><strong>Proyectos Asignados:</strong></p>
             <ul>
-                {% for proyecto, detalles in data.proyectos.items %}
+                {% for proyecto in data.proyectos %}
                     <li>{{ proyecto.name }} ({{ proyecto.description }})</li>
-                    
-                    {% if detalles.tareas %}
-                        <p>Tareas asignadas al proyecto:</p>
-                        <ul>
-                            {% for tarea in detalles.tareas %}
-                                <li>{{ tarea.title }}: {{ tarea.description }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No tiene tareas asignadas para este proyecto.</p>
-                    {% endif %}
                 {% endfor %}
             </ul>
         {% else %}
             <p>No tiene proyectos asignados.</p>
+        {% endif %}
+
+        {% if data.tareas %}
+            <p><strong>Tareas asignadas a los proyectos:</strong></p>
+            <ul>
+                {% for tarea in data.tareas %}
+                    <li>{{ tarea.title }}: {{ tarea.description }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No tiene tareas asignadas.</p>
         {% endif %}
     {% endfor %}
 {% else %}
@@ -48,7 +48,6 @@
             <option value="{{ proyecto.id }}">{{ proyecto.name }}</option>
         {% endfor %}
     </select>
-    <button type="submit">Asignar Proyecto</button>
+    <button type="submit">Asignar Proyecto</button> 
 </form>
-
 {% endblock %}

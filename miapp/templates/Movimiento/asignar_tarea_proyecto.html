@@ -1,0 +1,72 @@
+{% extends 'layout/menu.html' %}
+
+{% block content %}
+<h2>Asignar eliminaciòn proyecto</h2>
+<h3>Detalle de Proyecto</h3>
+<li>Proyecto ID Temporal: {{ proyecto.id }} </li>
+<li>Nombre Alumno: {{ proyecto.alumno_nombre }}</li>
+<li>Tipo de Proyecto: {{ proyecto.tipo_proyecto }}</li>
+<li>Curso: {{ proyecto.curso_id }}</li>
+<li>Nombre del curso: {{ proyecto.curso_name }}</li>
+<li>Proyecto: {{ proyecto.proyecto_id }}</li>
+<li>Nombre del proyecto: {{ proyecto.proyecto_name }}</li>
+<li>Fecha: {{ proyecto.fecha }}</li>
+
+<p></p>
+<h5>¿Estàs seguro de tarea el proyecto?</h5>
+<p></p>
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">Tarea Mov</button>
+    <a href="{% url 'dashboard' %}">Cancelar</a>
+</form> 
+{% endblock %}
+{% extends 'layout/menu.html' %}
+
+{% block content %}
+<h1>Asignar Tarea a Proyecto</h1>
+
+<h2>Alumno: {{ alumno.nombres }} {{ alumno.apellido }}</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <div>
+        <label for="curso">Seleccionar Curso:</label>
+        <select name="curso" id="curso" required>
+            <option value="">-- Seleccione un Curso --</option>
+            {% for curso_id in cursos %}
+            {% with curso=curso_id|to_course %}
+            <option value="{{ curso.id }}">{{ curso.name }}</option>
+            {% endwith %}
+            {% endfor %}
+        </select>
+    </div>
+
+    {% if proyectos %}
+    <div>
+        <label for="proyecto">Seleccionar Proyecto:</label>
+        <select name="proyecto" id="proyecto" required>
+            <option value="">-- Seleccione un Proyecto --</option>
+            {% for proyecto in proyectos %}
+            <option value="{{ proyecto.id }}">{{ proyecto.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+
+    {% if tareas %}
+    <div>
+        <label for="tarea">Seleccionar Tarea:</label>
+        <select name="tarea" id="tarea" required>
+            <option value="">-- Seleccione una Tarea --</option>
+            {% for tarea in tareas %}
+            <option value="{{ tarea.id }}">{{ tarea.title }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+
+    <button type="submit" class="btn btn-primary">Asignar Tarea</button>
+</form>
+{% endblock %}

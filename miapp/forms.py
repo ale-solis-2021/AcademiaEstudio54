@@ -18,7 +18,7 @@ class CreateNewProject(forms.ModelForm):
             model = Project 
             fields = ['name', 'description','curso']  
 
-class CreateNewAlumno(forms.ModelForm):
+class CreateNewAlumno(forms.ModelForm): 
     curso = forms.ModelChoiceField(queryset=Course.objects.all(), label="Curso Asociado")
     
     class Meta:

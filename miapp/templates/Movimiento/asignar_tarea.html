@@ -1,14 +1,17 @@
-<!-- asignar_tarea.html -->
 {% extends 'layout/menu.html' %}
+
 {% block content %}
-   <h1>Asignar Tarea</h1>
-   <h2>Alumno: {{ alumno.nombres }}</h2>
-   <h3>Curso: {{ curso.name }}</h3>
-   <h4>Proyecto: {{ proyecto.name }}</h4>
-   
-   <form method="POST">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button>Asignar Tarea</button>
-   </form>
+<h2>Asignar Tarea a Proyecto: {{ proyecto.name }}</h2>
+<p>Alumno: {{ alumno.nombres }} {{ alumno.apellido }}</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <label for="tarea">Seleccionar Tarea:</label>
+    <select name="tarea" id="tarea">
+        {% for tarea in tareas %}
+        <option value="{{ tarea.id }}">{{ tarea.title }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary">Asignar Tarea</button>
+</form>
 {% endblock %}

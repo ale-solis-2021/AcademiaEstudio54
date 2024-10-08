@@ -1,0 +1,13 @@
+{% extends 'layout/menu.html' %}
+
+{% block content %}
+<h1>Inscribir Nuevo Alumno</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Inscribir Alumno</button>
+</form>
+
+<a href="{% url 'crear_movimiento' %}" class="btn btn-secondary">Cancelar</a>
+{% endblock %}

@@ -1,18 +1,47 @@
 {% extends 'layout/menu.html' %}
+
 {% block content %}
 <h1>Cursos 📚</h1>
 
-
 {% for course in courses %}
-    {% if course.done == False %} 
-        <p>Curso Pendiente ❌</p> 
-    {% else %} 
-        <p>CURSO FINALIZADO ✅</p> 
-    {% endif %} 
     <h2>Título: {{ course.name }}</h2>
-    <p>Description: {{ course.description }}</p>
+    <p>Descripción: {{ course.description }}</p>
+
+    {% if course.done %}
+        <p>CURSO FINALIZADO ✅</p>
+    {% else %}
+        <p>Curso Pendiente ❌</p>
+    {% endif %}
+
+    <h3>Proyectos:</h3>
+    {% if course.project_set.all %}
+        <ul>
+            {% for project in course.project_set.all %}
+                <li>
+                    <strong>{{ project.name }}:</strong> {{ project.description }}
+                    
+                    <h4>Tareas:</h4>
+                    {% if project.task_set.all %}
+                        <ul>
+                            {% for task in project.task_set.all %}
+                                <li>{{ task.title }} - {{ task.description }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No hay tareas asignadas a este proyecto.</p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No hay proyectos asignados a este curso.</p>
+    {% endif %}
+    
     <button>Inscribirse</button>
     <button>Actualizar Información</button>
     <button>Finalizar Curso</button>
+
+    <hr>
 {% endfor %}
+
 {% endblock %}

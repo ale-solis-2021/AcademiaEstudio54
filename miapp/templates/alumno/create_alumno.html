@@ -4,22 +4,27 @@
 
     <h1>Crear Nuevo Alumno</h1>
 
+    <!-- Mostrar contexto de los cursos -->
     <p>Contexto de cursos: {{ curso }}</p>
 
+    <!-- Mostrar cantidad de cursos encontrados -->
     <p>Cursos encontrados: {{ curso.count }}</p> <!-- Muestra el número de cursos -->
-        {% for course in curso %}
-            <ul>
-                <li>
-                    <h3>
-                    {{ course.id }} - {{ course.name }}
-                    </h3>
-                </li>
-            </ul>
-        {% endfor %}
 
+    <!-- Tabla para visualizar los cursos en forma horizontal -->
+    <table border="1" cellspacing="0" cellpadding="10">
+        <tr>
+            {% for course in curso %}
+                <td>
+                    <h3>{{ course.id }} - {{ course.name }}</h3>
+                </td>
+            {% endfor %}
+        </tr>
+    </table>
+
+    <!-- Formulario para crear un nuevo alumno -->
     <form method="POST">
         {% csrf_token %}
-        {{ form.as_p }}  
+        {{ form.as_p }}
         <button>SAVE</button>
     </form>
 

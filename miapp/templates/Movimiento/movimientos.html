@@ -1,7 +1,11 @@
-{% extends 'layout/menu.html' %}
+{% extends 'layout/menu.html' %} 
 
 {% block content %}
 <h1>Crear Movimiento Diario</h1>
+
+<!-- Botón para redirigir a la página de inscripción de alumnos -->
+<a href="{% url 'inscribir_alumno' %}" class="btn btn-primary">Inscribir Nuevo Alumno</a>
+
 <h2>Seleccionar Alumno: </h2>
 
 <form method="POST">

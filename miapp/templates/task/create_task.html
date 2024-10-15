@@ -2,29 +2,29 @@
 
 {% block content %}
 
-<h1> Create New Task </h1>
+    <h1> Crear nueva tarea </h1>
 
-<p>Contexto de proyectos: {{ proyectos }}</p>
+    <p>Contexto de proyectos: {{ proyectos }}</p>
 
-<p>Proyectos encontrados: {{ proyectos.count }}</p> <!-- Muestra el número de proyectos -->
-{% for project in proyectos %}
-    <ul>
-        <li>
-            <h3>
-            {{ project.id }} - {{ project.name }}
-            </h3>
-        </li>
-    </ul>
-{% endfor %}
+    <p>Proyectos encontrados: {{ proyectos.count }}</p> <!-- Muestra el número de proyectos -->
 
-<form method="POST">
-    {% csrf_token %}
+    <table border='1'>
+        <tr>
+            {% for project in proyectos %}
+                <td>
+                    <h3>Proyecto: {{ project.id }} - Nombre: {{ project.name }}</h3>
+                </td>
+            {% endfor %}
+        </tr>
+    </table>
 
-    {{ form.as_p }}
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
 
-    <button>
-        SAVE
-    </button>
-</form>
+        <button>
+            SAVE
+        </button>
+    </form>
 
 {% endblock %}

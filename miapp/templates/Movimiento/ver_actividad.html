@@ -31,6 +31,7 @@
             <td>
                 {% if movimiento.proyecto %}
                     {{ movimiento.proyecto.name }}
+                    {{ movimiento.proyecto.id }}
                 {% else %}
                     Sin proyecto
                 {% endif %}
@@ -38,12 +39,21 @@
             
             <!-- Validación para la tarea -->
             <td>
-                {% if movimiento.tarea %}
-                    {{ movimiento.tarea.title }}
-                {% else %}
-                    Sin tarea
-                {% endif %}
+                <!-- {{ tarea_por_proyecto }} -->
+               {% for clave, valor in tarea_por_proyecto.items %}
+                    <!-- {{ clave }} - {{ valor }} -->
+                    {% if clave == movimiento.proyecto_id %} 
+                        {% if valor %}
+                            {% for tarea in valor %} 
+                                <li>{{ tarea.description }}-{{ movimiento.hecho }}</li>
+
+                            {% endfor %}
+                        {% endif %}
+                    {% endif %}
+
+               {% endfor %}
             </td>
+
             
             <td>{{ movimiento.fecha_movimiento }}</td>
         </tr>

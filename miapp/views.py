@@ -417,7 +417,8 @@ def llenar_tabla_temporal():
             proyecto_id=movimiento.proyecto.id if movimiento.proyecto else None,
             proyecto_name=movimiento.proyecto.name if movimiento.proyecto else None,
             tareas_asignadas=tareas_asignadas,  # Guardar las tareas asignadas como string
-            fecha=movimiento.fecha_movimiento
+            fecha=movimiento.fecha_movimiento,
+            hecho=movimiento.hecho
         )
 
 def dashboard(request):
@@ -434,6 +435,8 @@ def dashboard(request):
     if tipo_movimiento_id:
         # Filtrar los movimientos por el tipo de movimiento seleccionado
         movimientos = movimientos.filter(tipo_movimiento_id=tipo_movimiento_id)
+    
+    print(movimientos)    
 
     return render(request, 'movimiento/dashboard.html', {
         'movimientos': movimientos,
@@ -488,11 +491,19 @@ def ver_actividad(request, alumno_id):
     alumno = get_object_or_404(ClienteAlumno, id=alumno_id)
     
     # Obtener todos los movimientos relacionados al alumno
-    movimientos = Movimiento.objects.filter(alumno=alumno).order_by('fecha_movimiento')
-
+    movimientos = Movimiento.objects.filter(alumno=alumno).select_related('proyecto','curso')
+    print("Movimiento me trae todo esto:", movimientos)
+    tarea_por_proyecto = {}
+    for movimiento in movimientos:
+        if movimiento.proyecto:
+            tareas = Task.objects.filter(project = movimiento.proyecto)
+            tarea_por_proyecto[movimiento.proyecto_id] = tareas
+    
+    print("Esto trae tarea por proyecto: ",  tarea_por_proyecto)    
     return render(request, 'movimiento/ver_actividad.html', {
         'alumno': alumno,
-        'movimientos': movimientos
+        'movimientos': movimientos,
+        'tarea_por_proyecto': tarea_por_proyecto
     })   
     
 def asignar_tarea_proyecto(request, alumno_id):

@@ -51,139 +51,6 @@ class ClienteAlumno(models.Model):
         return f"{self.nombres} {self.apellido}"
 
 
-# class Administracion(models.Model): 
-#     nombre_usuario = models.CharField(max_length=255)
-#     mail = models.EmailField(max_length=255)
-#     password = models.CharField(max_length=255)
-#     confirmacion = models.CharField(max_length=255)
-#     fecha_de_registro = models.DateTimeField(auto_now_add=True)
-#     usuario = models.ForeignKey('auth.User', on_delete=models.CASCADE)
-    
-#     def __str__(self):
-#         return self.nombre_usuario
-
-
-# class Curso(models.Model):
-#     nombre_del_curso = models.CharField(max_length=255)
-#     descripcion = models.TextField()
-#     fecha_inicio = models.DateField()
-#     fecha_final = models.DateField()
-#     duracion = models.IntegerField()
-#     nivel = models.IntegerField()
-#     importe_curso = models.DecimalField(max_digits=10, decimal_places=2)
-#     materias = models.ForeignKey('Materia', on_delete=models.CASCADE)
-#     materiales = models.ForeignKey('Material', on_delete=models.CASCADE)
-#     condicion_curso = models.ForeignKey('CondicionCurso', on_delete=models.CASCADE)
-    
-#     def __str__(self):
-#         return self.nombre_del_curso
-
-
-# class Profesor(models.Model):
-#     nombre = models.CharField(max_length=255)
-#     apellido = models.CharField(max_length=255)
-#     correo_electronico = models.EmailField(max_length=255)
-#     telefono = models.CharField(max_length=20)
-#     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    
-#     def __str__(self):
-#         return f"{self.nombre} {self.apellido}"
-
-
-# class Pago(models.Model):
-#     fecha = models.DateField()
-#     numero_de_recibo = models.CharField(max_length=50)
-#     descripcion = models.TextField()
-#     cantidad_de_cuotas = models.IntegerField()
-#     tarjeta = models.CharField(max_length=50)
-#     vto_tarjeta = models.DateField()
-#     banco = models.CharField(max_length=100)
-#     importe_total = models.DecimalField(max_digits=10, decimal_places=2)
-#     alumno = models.ForeignKey(ClienteAlumno, on_delete=models.CASCADE)
-#     tipo_de_pago = models.IntegerField()
-#     forma_pago = models.ForeignKey('EntidadFormaPago', on_delete=models.CASCADE)
-    
-#     def __str__(self):
-#         return f"Pago {self.id_pagos}"
-
-
-# class Materia(models.Model):
-#     nombre_materia = models.CharField(max_length=255)
-#     descripcion = models.TextField()
-#     creditos = models.IntegerField()
-#     profesor_responsable = models.ForeignKey(Profesor, on_delete=models.CASCADE)
-#     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    
-#     def __str__(self):
-#         return self.nombre_materia
-
-
-# class Material(models.Model):
-#     titulo = models.CharField(max_length=255)
-#     detalle = models.TextField()
-#     fecha_subida = models.DateField()
-#     autor = models.CharField(max_length=255)
-#     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-#     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
-#     tipo_formato = models.ForeignKey('TipoFormato', on_delete=models.CASCADE)
-    
-#     def __str__(self):
-#         return self.titulo
-
-
-# class TipoFormato(models.Model):
-#     campo_links = models.CharField(max_length=255)
-#     campo_pdf = models.CharField(max_length=255)
-#     campo_mp4 = models.CharField(max_length=255)
-    
-#     def __str__(self):
-#         return f"Tipo Formato {self.id_tipo_formato}"
-
-
-# class Calificacion(models.Model):
-#     fecha_evaluacion = models.DateField()
-#     comentarios = models.TextField()
-#     tipo_de_evaluacion = models.IntegerField()
-#     peso_de_la_nota = models.DecimalField(max_digits=5, decimal_places=2)
-#     nota = models.DecimalField(max_digits=5, decimal_places=2)
-#     aprobado = models.BooleanField()
-#     alumno = models.ForeignKey(ClienteAlumno, on_delete=models.CASCADE)
-#     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-#     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
-    
-#     def __str__(self):
-#         return f"Calificación {self.id_calificaciones}"
-
-
-# class MovimientoFinanciacion(models.Model):
-#     fecha_cuota = models.DateField()
-#     cuota = models.IntegerField()
-#     vto_cuota = models.DateField()
-#     importe_cuota = models.DecimalField(max_digits=10, decimal_places=2)
-#     alumno = models.ForeignKey(ClienteAlumno, on_delete=models.CASCADE)
-    
-#     def __str__(self):
-#         return f"Movimiento Financiación {self.id_movim_financiacion}"
-
-
-# class EntidadFormaPago(models.Model):
-#     detalle = models.CharField(max_length=255)
-#     tarjeta_credito_debito = models.BooleanField()
-#     transferencia = models.BooleanField()
-#     mercado_pago = models.BooleanField()
-#     otros = models.BooleanField()
-    
-#     def __str__(self):
-#         return self.detalle
-
-
-# class CondicionCurso(models.Model):
-#     nombre = models.CharField(max_length=255)
-#     detalle_condicion = models.TextField()
-#     tipo = models.CharField(max_length=50)
-    
-#     def __str__(self):
-#         return self.nombre
 
 class TipoMovimiento(models.Model):
     nombre = models.CharField(max_length=255)
@@ -201,6 +68,7 @@ class Movimiento(models.Model):
     curso = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
     proyecto = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
     tarea = models.ForeignKey(Task, on_delete=models.CASCADE, null=True, blank=True)  
+    hecho = models.BooleanField(default=False)
     
     # materiales = models.ForeignKey(Material, on_delete=models.CASCADE)
 
@@ -219,6 +87,7 @@ class MovimientoTemporal(models.Model):
     proyecto_name = models.CharField(max_length=100, null=True, blank=True)
     tareas_asignadas = models.TextField(null=True, blank=True)  # Campo para almacenar tareas asignadas
     fecha = models.DateTimeField()
+    hecho = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Alumno {self.alumno_nombre} - Movimiento {self.tipo_movimiento}"

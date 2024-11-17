@@ -252,7 +252,7 @@ def crear_movimiento(request):
             # Filtrar tareas por los proyectos asignados al alumno
             proyectos_ids = proyectos_asignados.values_list('proyecto__id', flat=True)
             tareas_asignadas = Task.objects.filter(project__id__in=proyectos_ids)
-
+             
         else:
             return redirect('inscribir_alumno')
 
@@ -276,6 +276,7 @@ def asignar_proyecto(request, id_alumnos):
 
     # Obtener los movimientos del alumno para verificar su inscripción en cursos
     movimientos = Movimiento.objects.filter(alumno=alumno).select_related('curso', 'proyecto')
+    print("movimientos", movimientos)
 
     # Consultar los proyectos disponibles para los cursos en los que está inscrito el alumno
     cursos_con_proyectos_y_tareas = {}
@@ -295,29 +296,33 @@ def asignar_proyecto(request, id_alumnos):
         if proyecto:
             tareas = Task.objects.filter(project=proyecto)
             cursos_con_proyectos_y_tareas[curso]['tareas'].extend(tareas)
-
+     
     # Obtener los proyectos relacionados solo con los cursos en los que el alumno está inscrito
     cursos_inscritos = [movimiento.curso.id for movimiento in movimientos if movimiento.curso]
-
+    print("Cursos Inscriptos: ", cursos_inscritos)
     # Filtrar proyectos que pertenezcan a los cursos inscritos y que aún no hayan sido asignados
     proyectos_disponibles = Project.objects.filter(curso__id__in=cursos_inscritos).exclude(
         id__in=[p.id for curso_data in cursos_con_proyectos_y_tareas.values() for p in curso_data['proyectos']]
     )
-
+    print("Proyectos disponibles: ", proyectos_disponibles)
     # Guardar el movimiento si se ha enviado un proyecto seleccionado
     if request.method == 'POST':
         proyecto_id = request.POST.get('proyecto')
         if proyecto_id:
             proyecto = Project.objects.get(id=proyecto_id)
             curso = proyecto.curso  # Se asume que el proyecto ya está vinculado al curso
-
+            
+            tareas_del_proyecto = Task.objects.filter(project = proyecto)
+            for tarea in tareas_del_proyecto:
             # Crear un nuevo movimiento de asignación de proyecto
-            nuevo_movimiento = Movimiento.objects.create(
-                tipo_movimiento=tipo_movimiento,
-                alumno=alumno,
-                curso=curso,
-                proyecto=proyecto
-            )
+                nuevo_movimiento = Movimiento.objects.create(
+                    tipo_movimiento=tipo_movimiento,
+                    alumno=alumno,
+                    curso=curso,
+                    proyecto=proyecto,
+                    tarea=tarea
+                    
+                )
 
             # Redirigir a la vista `consultar_movimientos` para mostrar el nuevo movimiento
             return redirect('consultar_movimientos', alumno_id=alumno.id)
@@ -405,7 +410,7 @@ def llenar_tabla_temporal():
         tareas = Task.objects.filter(project_id=movimiento.proyecto.id) if movimiento.proyecto else None
 
         # Concatenar las tareas en un string o almacenarlas en la tabla temporal de la manera que prefieras
-        tareas_asignadas = ', '.join([tarea.title for tarea in tareas]) if tareas else None
+        # tareas_asignadas = ', '.join([tarea.title for tarea in tareas]) if tareas else None
 
         # Crear el registro en la tabla temporal
         MovimientoTemporal.objects.create(
@@ -416,7 +421,7 @@ def llenar_tabla_temporal():
             curso_name=movimiento.curso.name if movimiento.curso else None,
             proyecto_id=movimiento.proyecto.id if movimiento.proyecto else None,
             proyecto_name=movimiento.proyecto.name if movimiento.proyecto else None,
-            tareas_asignadas=tareas_asignadas,  # Guardar las tareas asignadas como string
+            tarea_asignada=movimiento.tarea,  # Guardar las tareas asignadas como string
             fecha=movimiento.fecha_movimiento,
             hecho=movimiento.hecho
         )
@@ -491,7 +496,7 @@ def ver_actividad(request, alumno_id):
     alumno = get_object_or_404(ClienteAlumno, id=alumno_id)
     
     # Obtener todos los movimientos relacionados al alumno
-    movimientos = Movimiento.objects.filter(alumno=alumno).select_related('proyecto','curso')
+    movimientos = MovimientoTemporal.objects.filter(alumno_id=alumno_id).select_related('proyecto','curso')
     print("Movimiento me trae todo esto:", movimientos)
     tarea_por_proyecto = {}
     for movimiento in movimientos:

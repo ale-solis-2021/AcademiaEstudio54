@@ -45,9 +45,9 @@
             <td>{{ movimiento.proyecto_name }}</td>
             <td>
                 <!-- Verificar si tiene tareas asignadas al proyecto -->
-                {% if movimiento.tareas_asignadas %}
+                {% if movimiento.tarea_asignada %}
                     <ul>
-                        <li>{{ movimiento.tareas_asignadas }}</li> <!-- Las tareas concatenadas se muestran aquí -->
+                        <li>{{ movimiento.tarea_asignada }}</li> <!-- Las tareas concatenadas se muestran aquí -->
                     </ul>
                 {% else %}
                 <span>No tiene tareas asignadas.</span>

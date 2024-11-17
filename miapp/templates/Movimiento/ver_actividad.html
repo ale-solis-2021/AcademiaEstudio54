@@ -39,23 +39,16 @@
             
             <!-- Validación para la tarea -->
             <td>
-                <!-- {{ tarea_por_proyecto }} -->
-               {% for clave, valor in tarea_por_proyecto.items %}
-                    <!-- {{ clave }} - {{ valor }} -->
-                    {% if clave == movimiento.proyecto_id %} 
-                        {% if valor %}
-                            {% for tarea in valor %} 
-                                <li>{{ tarea.description }}-{{ movimiento.hecho }}</li>
-
-                            {% endfor %}
-                        {% endif %}
-                    {% endif %}
-
-               {% endfor %}
+                {{ movimiento.tarea_asignada }}-{{ Task.description }}
+              
             </td>
-
             
-            <td>{{ movimiento.fecha_movimiento }}</td>
+            <td>{{ movimiento.fecha }}</td>
+            {% if movimiento.hecho %}
+            <td>Tarea Realizada</td>
+            {% else %}
+            <td>Tarea Pendiente</td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>
